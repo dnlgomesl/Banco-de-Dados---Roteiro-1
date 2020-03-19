@@ -94,3 +94,24 @@ INSERT INTO funcionario VALUES ('12345678931', '1987-05-15', 'Thiago', 'LIMPEZA'
 INSERT INTO funcionario VALUES ('12345678932', '1980-05-05', 'Levi', 'SUB-LIMPEZAsdf', 'P', null);
 INSERT INTO funcionario VALUES ('12345678933', '1980-12-03', 'Felipe', 'SUB-LIMPEZAsd', 'L', '12345678914');
 INSERT INTO funcionario VALUES ('12345678934', '1987-05-15', 'Thiago', 'LIMPEZAds', 'J', null);
+-- 10
+INSERT INTO funcionario VALUES ('98765432111', '1989-05-05', 'Fernando', 'SUB-LIMPEZA', 'S', null);
+INSERT INTO funcionario VALUES ('98765432122', '1990-05-07', 'Antônio', 'LIMPEZA', 'J', '98765432111');
+INSERT INTO funcionario VALUES ('32323232955', '1985-12-03', 'Marcos', 'SUB-LIMPEZA', 'P', '98765432111');
+INSERT INTO funcionario VALUES ('32323232911', '1987-05-15', 'Marcus', 'LIMPEZA', 'S', null);
+ALTER TABLE funcionario DROP CONSTRAINT seguro_superiorCpf_fkey;
+ALTER TABLE funcionario ADD CONSTRAINT seguro_superiorCpf_fkey FOREIGN KEY (superior_cpf) REFERENCES funcionario(cpf) ON DELETE CASCADE;
+ALTER TABLE tarefas ADD CONSTRAINT tarefas_cpf_fkey FOREIGN KEY (func_resp_cpf) REFERENCES funcionario (cpf) ON DELETE CASCADE;
+DELETE FROM funcionario WHERE cpf = '12345678911';
+-- 11
+-- precisei fazer isso pois minha chave primaria era com o cpf e id
+ALTER TABLE tarefas DROP CONSTRAINT tarefas_pkey;
+-- mudei a chave primaraia para ser apenas com o id
+ALTER TABLE tarefas ADD PRIMARY KEY (id);
+--  tirei o not null da coluna
+ALTER TABLE tarefas ALTER COLUMN func_resp_cpf DROP NOT NULL;
+ALTER TABLE tarefas ADD CONSTRAINT nao_null_se_nao_for_e CHECK ((func_resp_cpf IS NULL AND status != 'E') OR (func_resp_cpf IS NOT NULL));
+ALTER TABLE tarefas DROP CONSTRAINT tarefas_cpf_fkey;
+ALTER TABLE tarefas ADD CONSTRAINT tarefas_cpf_fkey FOREIGN KEY (func_resp_cpf) REFERENCES funcionario (cpf) ON DELETE SET NULL;
+INSERT INTO tarefas VALUES (2147483659, 'limpar portas 1o andar', '32323232911', 2, 'E');
+DELETE FROM funcionario WHERE cpf = '32323232911';
